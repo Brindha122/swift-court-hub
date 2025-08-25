@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { VenueCard } from "@/components/VenueCard";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
 
 export default function VenuesPage() {
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
@@ -27,6 +29,15 @@ export default function VenuesPage() {
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("popularity");
+
+  // Check URL params for sport filter
+  useEffect(() => {
+    const sportParam = searchParams.get('sport');
+    if (sportParam) {
+      const sportName = sportParam.charAt(0).toUpperCase() + sportParam.slice(1);
+      setSelectedSports([sportName]);
+    }
+  }, [searchParams]);
 
   // Mock venues data
   const allVenues = [
@@ -155,7 +166,7 @@ export default function VenuesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation userRole="user" userName="John Doe" />
+      <Navigation userRole="user" userName="Current User" />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

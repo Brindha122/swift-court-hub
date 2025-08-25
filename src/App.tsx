@@ -7,6 +7,9 @@ import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/AuthPage";
 import VenuesPage from "./pages/VenuesPage";
 import UserDashboard from "./pages/UserDashboard";
+import MyBookings from "./pages/MyBookings";
+import UserProfile from "./pages/UserProfile";
+import BookingPage from "./pages/BookingPage";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
@@ -27,8 +30,9 @@ const App = () => (
           
           {/* User Routes */}
           <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/bookings" element={<UserDashboard />} />
-          <Route path="/profile" element={<UserDashboard />} />
+          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/book" element={<BookingPage />} />
           
           {/* Facility Owner Routes */}
           <Route path="/owner/dashboard" element={<OwnerDashboard />} />

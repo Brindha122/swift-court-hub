@@ -140,11 +140,11 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation userRole="user" userName="John Doe" />
+      <Navigation userRole="user" userName="Current User" />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, John! 👋</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome back! 👋</h1>
           <p className="text-muted-foreground">Here's what's happening with your bookings</p>
         </div>
 

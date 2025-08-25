@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { VenueCard } from "@/components/VenueCard";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import venueTennis from "@/assets/venue-tennis.jpg";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   // Mock data for popular venues
   const popularVenues = [
@@ -88,7 +90,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation userRole="user" userName="John Doe" />
+      <Navigation userRole="user" userName="" />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden">
@@ -135,14 +137,14 @@ export default function HomePage() {
             </div>
             
             <div className="flex flex-wrap gap-3">
-              <Button variant="hero" size="lg">
-                <Calendar size={20} className="mr-2" />
-                Book Now
-              </Button>
-              <Button variant="sport" size="lg">
-                <Trophy size={20} className="mr-2" />
-                Explore Venues
-              </Button>
+            <Button variant="hero" size="lg" onClick={() => navigate('/venues')}>
+              <Calendar size={20} className="mr-2" />
+              Book Now
+            </Button>
+            <Button variant="sport" size="lg" onClick={() => navigate('/venues')}>
+              <Trophy size={20} className="mr-2" />
+              Explore Venues
+            </Button>
             </div>
           </div>
         </div>
@@ -158,7 +160,11 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {popularSports.map((sport, index) => (
-              <Card key={index} className="group cursor-pointer hover:shadow-card transition-smooth border-border/50">
+              <Card 
+                key={index} 
+                className="group cursor-pointer hover:shadow-card transition-smooth border-border/50"
+                onClick={() => navigate(`/venues?sport=${sport.name.toLowerCase()}`)}
+              >
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl mb-3">{sport.icon}</div>
                   <h3 className="font-semibold mb-2">{sport.name}</h3>
@@ -178,7 +184,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-bold mb-2">Popular Venues</h2>
               <p className="text-muted-foreground">Top-rated courts near you</p>
             </div>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate('/venues')}>
               View All
               <ArrowRight size={16} className="ml-2" />
             </Button>
