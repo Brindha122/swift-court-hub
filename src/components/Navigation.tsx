@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { NotificationBar } from "@/components/NotificationBar";
 import { 
   Home, 
   MapPin, 
@@ -9,7 +10,6 @@ import {
   User, 
   BarChart3, 
   Settings,
-  Bell,
   LogOut,
   Menu,
   X
@@ -88,9 +88,7 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
 
           {/* User Actions */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="ghost" size="icon">
-              <Bell size={18} />
-            </Button>
+            <NotificationBar />
             
             <div className="flex items-center space-x-2">
               <div className="text-right">

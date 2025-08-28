@@ -64,10 +64,10 @@ export default function HomePage() {
   ];
 
   const popularSports = [
-    { name: "Badminton", count: "200+ courts", icon: "🏸" },
-    { name: "Tennis", count: "150+ courts", icon: "🎾" },
-    { name: "Basketball", count: "100+ courts", icon: "🏀" },
-    { name: "Football", count: "80+ fields", icon: "⚽" },
+    { name: "Badminton", count: "380+ courts", icon: "🏸" },
+    { name: "Tennis", count: "380+ courts", icon: "🎾" },
+    { name: "Basketball", count: "380+ courts", icon: "🏀" },
+    { name: "Football", count: "380+ fields", icon: "⚽" },
   ];
 
   const features = [
@@ -231,7 +231,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-primary mb-2">500+</div>
+              <div className="text-3xl font-bold text-primary mb-2">3,800+</div>
               <div className="text-muted-foreground">Active Venues</div>
             </div>
             <div>
@@ -243,8 +243,8 @@ export default function HomePage() {
               <div className="text-muted-foreground">Bookings Made</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary mb-2">25+</div>
-              <div className="text-muted-foreground">Cities Covered</div>
+              <div className="text-3xl font-bold text-primary mb-2">38</div>
+              <div className="text-muted-foreground">Tamil Nadu Districts</div>
             </div>
           </div>
         </div>

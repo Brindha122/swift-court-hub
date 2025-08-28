@@ -39,75 +39,51 @@ export default function VenuesPage() {
     }
   }, [searchParams]);
 
-  // Mock venues data
-  const allVenues = [
-    {
-      id: "1",
-      name: "Elite Sports Complex",
-      sport: "Badminton",
-      location: "Downtown Mumbai, Maharashtra",
-      price: 800,
-      rating: 4.8,
-      image: venueBadminton,
-      amenities: ["AC", "Parking", "Lockers", "Changing Rooms"],
-      availability: "Available"
-    },
-    {
-      id: "2",
-      name: "Champions Tennis Club",
-      sport: "Tennis", 
-      location: "Bandra West, Mumbai",
-      price: 1200,
-      rating: 4.7,
-      image: venueTennis,
-      amenities: ["Professional Courts", "Coaching", "Equipment", "Cafeteria"],
-      availability: "Available"
-    },
-    {
-      id: "3",
-      name: "Metro Basketball Arena",
-      sport: "Basketball",
-      location: "Andheri East, Mumbai",
-      price: 600,
-      rating: 4.6,
-      image: venueBadminton,
-      amenities: ["Indoor", "Sound System", "Scoreboard", "Parking"],
-      availability: "Booked"
-    },
-    {
-      id: "4",
-      name: "Royal Badminton Center",
-      sport: "Badminton",
-      location: "Powai, Mumbai",
-      price: 700,
-      rating: 4.5,
-      image: venueBadminton,
-      amenities: ["AC", "Premium Courts", "Equipment", "Lockers"],
-      availability: "Available"
-    },
-    {
-      id: "5",
-      name: "Ace Tennis Academy",
-      sport: "Tennis",
-      location: "Juhu, Mumbai", 
-      price: 1500,
-      rating: 4.9,
-      image: venueTennis,
-      amenities: ["Clay Courts", "Professional Coaching", "Pro Shop", "Parking"],
-      availability: "Available"
-    },
-    {
-      id: "6",
-      name: "Supreme Football Ground",
-      sport: "Football",
-      location: "Borivali West, Mumbai",
-      price: 2000,
-      rating: 4.4,
-      image: venueBadminton,
-      amenities: ["Natural Grass", "Floodlights", "Changing Rooms", "Parking"],
-      availability: "Available"
-    }
+  // Tamil Nadu Districts with 10 courts each
+  const tamilNaduDistricts = [
+    "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", 
+    "Dindigul", "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", 
+    "Krishnagiri", "Madurai", "Mayiladuthurai", "Nagapattinam", "Namakkal", 
+    "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", 
+    "Salem", "Sivagangai", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", 
+    "Tiruchirappalli", "Tirunelveli", "Tirupathur", "Tiruppur", "Tiruvallur", 
+    "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"
   ];
+
+  const sportsTypes = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball", "Table Tennis", "Swimming", "Boxing", "Gym"];
+  
+  // Generate venues for all districts
+  const generateVenues = () => {
+    const venues = [];
+    let venueId = 1;
+    
+    tamilNaduDistricts.forEach(district => {
+      // Generate 10 courts per district
+      for (let i = 1; i <= 10; i++) {
+        const sport = sportsTypes[Math.floor(Math.random() * sportsTypes.length)];
+        const price = Math.floor(Math.random() * (2000 - 400) + 400);
+        const rating = (Math.random() * (5.0 - 3.5) + 3.5).toFixed(1);
+        
+        venues.push({
+          id: venueId.toString(),
+          name: `${district} ${sport} Arena ${i}`,
+          sport: sport,
+          location: `${district}, Tamil Nadu`,
+          district: district,
+          price: price,
+          rating: parseFloat(rating),
+          image: sport.includes('Tennis') ? venueTennis : venueBadminton,
+          amenities: ["AC", "Parking", "Lockers", "Equipment", "Changing Rooms"].slice(0, Math.floor(Math.random() * 3) + 2),
+          availability: Math.random() > 0.1 ? "Available" : "Booked"
+        });
+        venueId++;
+      }
+    });
+    
+    return venues;
+  };
+
+  const allVenues = generateVenues();
 
   const sports = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"];
   const amenities = ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria", "Changing Rooms"];
@@ -128,11 +104,12 @@ export default function VenuesPage() {
     }
   };
 
-  // Filter and sort venues
+  // Filter and sort venues  
   const filteredVenues = allVenues.filter(venue => {
     const matchesSearch = venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          venue.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         venue.sport.toLowerCase().includes(searchQuery.toLowerCase());
+                         venue.sport.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         venue.district?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesSports = selectedSports.length === 0 || selectedSports.includes(venue.sport);
     
@@ -182,7 +159,7 @@ export default function VenuesPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
                 <Input
-                  placeholder="Search venues, sports, or locations..."
+                  placeholder="Search by district name (e.g., Chennai, Coimbatore, Madurai)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"

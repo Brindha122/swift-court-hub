@@ -304,6 +304,22 @@ export default function BookingPage() {
                   <span className="text-primary">₹{finalAmount}</span>
                 </div>
 
+                <div className="space-y-3">
+                  <div className="p-4 border border-border/50 rounded-lg">
+                    <h4 className="font-medium mb-3">Payment Method</h4>
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input type="radio" name="payment" defaultChecked className="text-primary" />
+                        <span>Online Payment (UPI, Cards, Wallets)</span>
+                      </label>
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input type="radio" name="payment" className="text-primary" />
+                        <span>Pay at Venue (Cash/Card)</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
                 <Button 
                   className="w-full mt-6" 
                   size="lg"
@@ -313,7 +329,7 @@ export default function BookingPage() {
                   {isBooking ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Booking...
+                      Processing Booking...
                     </>
                   ) : (
                     <>
