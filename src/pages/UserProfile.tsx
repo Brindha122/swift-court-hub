@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import { 
   User, 
   Mail, 
@@ -21,6 +23,28 @@ import {
 } from "lucide-react";
 
 export default function UserProfile() {
+  const { toast } = useToast();
+  const [firstName, setFirstName] = useState("Current");
+  const [lastName, setLastName] = useState("User");
+  const [email, setEmail] = useState("user@example.com");
+  const [phone, setPhone] = useState("+91 98765 43210");
+  const [location, setLocation] = useState("Mumbai, India");
+  const [bio, setBio] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveChanges = async () => {
+    setIsSaving(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSaving(false);
+      toast({
+        title: "Profile Updated! ✅",
+        description: "Your changes have been saved successfully",
+      });
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation userRole="user" userName="Current User" />
@@ -50,8 +74,8 @@ export default function UserProfile() {
                   </Button>
                 </div>
                 
-                <h3 className="text-xl font-semibold mb-1">Current User</h3>
-                <p className="text-muted-foreground mb-4">user@example.com</p>
+                <h3 className="text-xl font-semibold mb-1">{firstName} {lastName}</h3>
+                <p className="text-muted-foreground mb-4">{email}</p>
                 
                 <div className="flex flex-wrap gap-2 justify-center mb-4">
                   <Badge variant="secondary">Premium Member</Badge>
@@ -91,41 +115,78 @@ export default function UserProfile() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" placeholder="Current" />
+                        <Input 
+                          id="firstName" 
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" placeholder="User" />
+                        <Input 
+                          id="lastName" 
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                        />
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="user@example.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="+91 98765 43210" />
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="location">Location</Label>
-                      <Input id="location" placeholder="Mumbai, India" />
+                      <Input 
+                        id="location" 
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                      />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="bio">Bio</Label>
                       <Textarea 
                         id="bio" 
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                         placeholder="Tell us about yourself and your favorite sports..."
                         rows={3}
                       />
                     </div>
                     
-                    <Button className="w-full md:w-auto">
-                      <Edit size={16} className="mr-2" />
-                      Save Changes
+                    <Button 
+                      className="w-full md:w-auto" 
+                      onClick={handleSaveChanges}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Edit size={16} className="mr-2" />
+                          Save Changes
+                        </>
+                      )}
                     </Button>
                   </TabsContent>
                   

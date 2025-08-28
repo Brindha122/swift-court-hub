@@ -16,14 +16,17 @@ import {
   ArrowRight,
   Zap,
   Shield,
-  Clock
+  Clock,
+  X
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import heroImage from "@/assets/hero-sports.jpg";
 import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFeature, setSelectedFeature] = useState(null);
   const navigate = useNavigate();
 
   // Mock data for popular venues
@@ -74,17 +77,20 @@ export default function HomePage() {
     {
       icon: Zap,
       title: "Instant Booking",
-      description: "Book courts in seconds with real-time availability"
+      description: "Book courts in seconds with real-time availability",
+      details: "Experience lightning-fast booking with our advanced real-time availability system. Browse, select, and confirm your court booking in under 30 seconds. Our platform automatically updates availability, preventing double bookings and ensuring you get the exact slot you want. No more waiting on hold or visiting venues in person - book anytime, anywhere with just a few clicks."
     },
     {
       icon: Shield,
       title: "Secure Payments",
-      description: "Safe and secure payment processing"
+      description: "Safe and secure payment processing",
+      details: "Your financial security is our top priority. We use industry-leading encryption and partner with trusted payment gateways to ensure your transactions are completely secure. Support for UPI, all major credit/debit cards, and popular digital wallets. All payments are processed through PCI DSS compliant systems with fraud detection and prevention measures in place."
     },
     {
       icon: Clock,
       title: "24/7 Support",
-      description: "Round-the-clock customer support"
+      description: "Round-the-clock customer support",
+      details: "Get help whenever you need it with our dedicated 24/7 customer support team. Whether you have questions about bookings, need help with payments, or face any technical issues, our experienced support agents are available via chat, email, and phone. Average response time under 2 minutes for chat support and comprehensive help documentation available."
     }
   ];
 
@@ -212,13 +218,18 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-card transition-smooth border-border/50">
+              <Card 
+                key={index} 
+                className="text-center hover:shadow-card transition-smooth border-border/50 cursor-pointer"
+                onClick={() => setSelectedFeature(feature)}
+              >
                 <CardContent className="p-8">
                   <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
                     <feature.icon className="text-primary-foreground" size={28} />
                   </div>
                   <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                   <p className="text-muted-foreground">{feature.description}</p>
+                  <Button variant="outline" className="mt-4">Learn More</Button>
                 </CardContent>
               </Card>
             ))}
@@ -249,6 +260,29 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Feature Details Dialog */}
+      <Dialog open={!!selectedFeature} onOpenChange={() => setSelectedFeature(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-3">
+              {selectedFeature && (
+                <>
+                  <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
+                    <selectedFeature.icon className="text-primary-foreground" size={24} />
+                  </div>
+                  <span>{selectedFeature.title}</span>
+                </>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="pt-4">
+            <p className="text-muted-foreground leading-relaxed">
+              {selectedFeature?.details}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Chatbot */}
       <Chatbot />

@@ -307,15 +307,35 @@ export default function BookingPage() {
                 <div className="space-y-3">
                   <div className="p-4 border border-border/50 rounded-lg">
                     <h4 className="font-medium mb-3">Payment Method</h4>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="payment" defaultChecked className="text-primary" />
-                        <span>Online Payment (UPI, Cards, Wallets)</span>
+                        <input type="radio" name="payment" value="online" defaultChecked className="text-primary" />
+                        <span>Online Payment</span>
                       </label>
+                      <div className="ml-6 p-3 bg-muted/30 rounded-lg">
+                        <p className="text-sm text-muted-foreground mb-2">Available Options:</p>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline">UPI</Badge>
+                          <Badge variant="outline">Credit Cards</Badge>
+                          <Badge variant="outline">Debit Cards</Badge>
+                          <Badge variant="outline">Wallets</Badge>
+                        </div>
+                        <div className="mt-3 p-2 bg-background border rounded text-center">
+                          <div className="text-xs text-muted-foreground mb-1">Scan QR to Pay</div>
+                          <div className="w-20 h-20 mx-auto bg-black/10 border-2 border-dashed border-primary/30 rounded flex items-center justify-center">
+                            <span className="text-xs text-primary">QR CODE</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">₹{finalAmount}</div>
+                        </div>
+                      </div>
                       <label className="flex items-center space-x-2 cursor-pointer">
-                        <input type="radio" name="payment" className="text-primary" />
+                        <input type="radio" name="payment" value="offline" className="text-primary" />
                         <span>Pay at Venue (Cash/Card)</span>
                       </label>
+                      <div className="ml-6 text-sm text-muted-foreground">
+                        <p>• Payment confirmation will be sent to venue owner</p>
+                        <p>• Booking confirmed only after payment at venue</p>
+                      </div>
                     </div>
                   </div>
                 </div>

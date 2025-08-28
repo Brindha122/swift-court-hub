@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { VenueCard } from "@/components/VenueCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Calendar, 
@@ -12,12 +14,52 @@ import {
   TrendingUp,
   Activity,
   CreditCard,
-  Filter
+  Filter,
+  Search
 } from "lucide-react";
 import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
 
 export default function UserDashboard() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  
+  // Tamil Nadu districts
+  const districts = [
+    "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode",
+    "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai",
+    "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet",
+    "Salem", "Sivagangai", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", 
+    "Tirunelveli", "Tirupathur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", 
+    "Viluppuram", "Virudhunagar"
+  ];
+
+  const handleSearch = (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    
+    const matchedDistricts = districts.filter(district => 
+      district.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    const results = matchedDistricts.flatMap(district => 
+      Array.from({ length: 10 }, (_, i) => ({
+        id: `${district}-${i + 1}`,
+        name: `${district} Sports Complex ${i + 1}`,
+        sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
+        location: `${district}, Tamil Nadu`,
+        price: 600 + (i * 100),
+        rating: 4.2 + (i * 0.1),
+        image: venueBadminton,
+        amenities: ["AC", "Parking", "Lockers"],
+        availability: "Available"
+      }))
+    );
+    setSearchResults(results.slice(0, 20));
+  };
+
   // Mock user stats
   const userStats = [
     {
@@ -146,7 +188,39 @@ export default function UserDashboard() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Welcome back! 👋</h1>
           <p className="text-muted-foreground">Here's what's happening with your bookings</p>
+          
+          {/* District Search */}
+          <div className="mt-6 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+              <Input
+                placeholder="Enter district name..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  handleSearch(e.target.value);
+                }}
+                className="pl-10"
+              />
+            </div>
+          </div>
         </div>
+
+        {/* Search Results */}
+        {searchResults.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Search Results ({searchResults.length})</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {searchResults.map((venue) => (
+                <VenueCard
+                  key={venue.id}
+                  {...venue}
+                  onBook={(id) => console.log(`Booking venue ${id}`)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

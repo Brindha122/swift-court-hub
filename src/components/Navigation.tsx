@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NotificationBar } from "@/components/NotificationBar";
@@ -23,6 +23,7 @@ interface NavigationProps {
 export function Navigation({ userRole = "user", userName = "Guest User" }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -53,6 +54,12 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
   };
 
   const navItems = getUserNavItems();
+
+  const handleLogout = () => {
+    // In a real app, you would clear auth tokens, user data, etc.
+    localStorage.clear();
+    navigate('/auth');
+  };
 
   return (
     <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -98,7 +105,7 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
                 </Badge>
               </div>
               
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
                 <LogOut size={18} />
               </Button>
             </div>
@@ -142,7 +149,7 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
                     {userRole?.replace('_', ' ') || 'User'}
                   </Badge>
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
                   <LogOut size={18} />
                 </Button>
               </div>
