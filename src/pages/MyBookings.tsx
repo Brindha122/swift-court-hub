@@ -151,11 +151,25 @@ export default function MyBookings() {
           <div className="flex flex-wrap gap-2">
             {booking.status === "confirmed" && (
               <>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    if (confirm('Are you sure you want to cancel this booking?')) {
+                      alert('Booking cancelled successfully. Refund will be processed within 5-7 business days.');
+                    }
+                  }}
+                >
                   <X size={16} className="mr-2" />
                   Cancel Booking
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    alert('Reschedule request submitted. You will receive a call from our team within 30 minutes to confirm new slot.');
+                  }}
+                >
                   Reschedule
                 </Button>
               </>
@@ -166,7 +180,40 @@ export default function MyBookings() {
                 Rate & Review
               </Button>
             )}
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                // Generate receipt content
+                const receiptContent = `
+QUICKCOURT BOOKING RECEIPT
+========================
+Booking ID: ${booking.bookingId}
+Venue: ${booking.venue}
+Sport: ${booking.sport}
+Court: ${booking.court || 'Main Court'}
+Date: ${new Date(booking.date).toLocaleDateString()}
+Time: ${booking.time}
+Amount: ₹${booking.price}
+Status: ${booking.status}
+========================
+Thank you for choosing QuickCourt!
+                `;
+                
+                // Create downloadable file
+                const blob = new Blob([receiptContent], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `QuickCourt_Receipt_${booking.bookingId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                alert('Receipt downloaded successfully!');
+              }}
+            >
               <Download size={16} className="mr-2" />
               Download Receipt
             </Button>

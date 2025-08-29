@@ -41,7 +41,7 @@ export default function HomePage() {
   ];
 
   // Generate popular venues from different districts
-  const popularVenues = tamilNaduDistricts.slice(0, 6).map((district, index) => ({
+  const popularVenues = tamilNaduDistricts.slice(0, 4).map((district, index) => ({
     id: `district-${district}`,
     name: `${district} Sports Complex`,
     sport: ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"][index],
@@ -152,17 +152,17 @@ export default function HomePage() {
             <p className="text-muted-foreground text-lg">Choose from hundreds of verified venues</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {tamilNaduDistricts.slice(0, 8).map((district, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {tamilNaduDistricts.map((district, index) => (
               <Card 
                 key={district} 
                 className="group cursor-pointer hover:shadow-card transition-smooth border-border/50"
                 onClick={() => navigate(`/venues?district=${district.toLowerCase()}`)}
               >
-                <CardContent className="p-6 text-center">
-                  <div className="text-4xl mb-3">🏟️</div>
-                  <h3 className="font-semibold mb-2">{district}</h3>
-                  <p className="text-sm text-muted-foreground">100+ courts</p>
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl mb-2">🏟️</div>
+                  <h3 className="font-semibold mb-1 text-sm">{district}</h3>
+                  <p className="text-xs text-muted-foreground">100+ courts</p>
                   <div className="flex flex-wrap justify-center gap-1 mt-2">
                     {["🏸", "🎾", "🏀", "⚽"].map((icon, i) => (
                       <span key={i} className="text-xs">{icon}</span>

@@ -223,20 +223,43 @@ export default function UserDashboard() {
           <h1 className="text-3xl font-bold mb-2">Welcome back! 👋</h1>
           <p className="text-muted-foreground">Here's what's happening with your bookings</p>
           
-          {/* District Search */}
-          <div className="mt-6 max-w-md">
+          {/* Enhanced Search */}
+          <div className="mt-6 max-w-2xl">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
               <Input
-                placeholder="Enter district name..."
+                placeholder="Search for venues, sports, or locations..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   handleSearch(e.target.value);
                 }}
-                className="pl-10"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch(searchQuery);
+                  }
+                }}
+                className="pl-10 py-3 text-lg"
               />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchResults([]);
+                  }}
+                >
+                  ×
+                </Button>
+              )}
             </div>
+            {searchQuery && searchResults.length === 0 && (
+              <div className="mt-2 p-3 bg-muted/50 rounded-md text-sm text-muted-foreground">
+                No results found for "{searchQuery}". Try searching with district names like "Chennai", "Coimbatore", etc.
+              </div>
+            )}
           </div>
         </div>
 
