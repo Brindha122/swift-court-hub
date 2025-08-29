@@ -30,12 +30,19 @@ export default function VenuesPage() {
   const [priceRange, setPriceRange] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("popularity");
 
-  // Check URL params for sport filter
+  // Check URL params for sport or district filter
   useEffect(() => {
     const sportParam = searchParams.get('sport');
+    const districtParam = searchParams.get('district');
+    
     if (sportParam) {
       const sportName = sportParam.charAt(0).toUpperCase() + sportParam.slice(1);
       setSelectedSports([sportName]);
+    }
+    
+    if (districtParam) {
+      const districtName = districtParam.charAt(0).toUpperCase() + districtParam.slice(1);
+      setSearchQuery(districtName);
     }
   }, [searchParams]);
 
@@ -61,7 +68,7 @@ export default function VenuesPage() {
       // Generate 10 courts per district
       for (let i = 1; i <= 10; i++) {
         const sport = sportsTypes[Math.floor(Math.random() * sportsTypes.length)];
-        const price = Math.floor(Math.random() * (2000 - 400) + 400);
+        const price = Math.floor(Math.random() * (600 - 400) + 400); // Keep prices ≤ 600
         const rating = (Math.random() * (5.0 - 3.5) + 3.5).toFixed(1);
         
         venues.push({

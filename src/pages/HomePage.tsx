@@ -29,42 +29,30 @@ export default function HomePage() {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const navigate = useNavigate();
 
-  // Mock data for popular venues
-  const popularVenues = [
-    {
-      id: "1",
-      name: "Elite Sports Complex",
-      sport: "Badminton",
-      location: "Downtown Mumbai",
-      price: 800,
-      rating: 4.8,
-      image: venueBadminton,
-      amenities: ["AC", "Parking", "Lockers"],
-      availability: "Available"
-    },
-    {
-      id: "2",
-      name: "Champions Tennis Club",
-      sport: "Tennis",
-      location: "Bandra West",
-      price: 1200,
-      rating: 4.7,
-      image: venueTennis,
-      amenities: ["Professional Courts", "Coaching", "Equipment"],
-      availability: "Available"
-    },
-    {
-      id: "3",
-      name: "Metro Basketball Arena",
-      sport: "Basketball",
-      location: "Andheri East",
-      price: 600,
-      rating: 4.6,
-      image: venueBadminton,
-      amenities: ["Indoor", "Sound System", "Scoreboard"],
-      availability: "Booked"
-    }
+  // Tamil Nadu districts for popular venues
+  const tamilNaduDistricts = [
+    "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", 
+    "Dindigul", "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", 
+    "Krishnagiri", "Madurai", "Mayiladuthurai", "Nagapattinam", "Namakkal", 
+    "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", 
+    "Salem", "Sivagangai", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", 
+    "Tiruchirappalli", "Tirunelveli", "Tirupathur", "Tiruppur", "Tiruvallur", 
+    "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"
   ];
+
+  // Generate popular venues from different districts
+  const popularVenues = tamilNaduDistricts.slice(0, 6).map((district, index) => ({
+    id: `district-${district}`,
+    name: `${district} Sports Complex`,
+    sport: ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"][index],
+    location: `${district}, Tamil Nadu`,
+    price: Math.min(600, 400 + (index * 40)), // Keep prices ≤ 600
+    rating: (4.5 + (index * 0.1)),
+    image: index % 2 === 0 ? venueBadminton : venueTennis,
+    amenities: ["AC", "Parking", "Lockers"],
+    availability: "Available",
+    district: district
+  }));
 
   const popularSports = [
     { name: "Badminton", count: "380+ courts", icon: "🏸" },
@@ -165,16 +153,21 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {popularSports.map((sport, index) => (
+            {tamilNaduDistricts.slice(0, 8).map((district, index) => (
               <Card 
-                key={index} 
+                key={district} 
                 className="group cursor-pointer hover:shadow-card transition-smooth border-border/50"
-                onClick={() => navigate(`/venues?sport=${sport.name.toLowerCase()}`)}
+                onClick={() => navigate(`/venues?district=${district.toLowerCase()}`)}
               >
                 <CardContent className="p-6 text-center">
-                  <div className="text-4xl mb-3">{sport.icon}</div>
-                  <h3 className="font-semibold mb-2">{sport.name}</h3>
-                  <p className="text-sm text-muted-foreground">{sport.count}</p>
+                  <div className="text-4xl mb-3">🏟️</div>
+                  <h3 className="font-semibold mb-2">{district}</h3>
+                  <p className="text-sm text-muted-foreground">100+ courts</p>
+                  <div className="flex flex-wrap justify-center gap-1 mt-2">
+                    {["🏸", "🎾", "🏀", "⚽"].map((icon, i) => (
+                      <span key={i} className="text-xs">{icon}</span>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             ))}

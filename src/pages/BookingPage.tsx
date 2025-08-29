@@ -42,7 +42,7 @@ export default function BookingPage() {
     name: "Elite Sports Complex",
     sport: "Badminton",
     location: "Downtown Mumbai",
-    price: 800,
+    price: 600, // Fixed at ≤ 600
     rating: 4.8,
     amenities: ["AC", "Parking", "Lockers", "Equipment"],
     image: "/assets/venue-badminton.jpg"
@@ -315,17 +315,51 @@ export default function BookingPage() {
                       <div className="ml-6 p-3 bg-muted/30 rounded-lg">
                         <p className="text-sm text-muted-foreground mb-2">Available Options:</p>
                         <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline">UPI</Badge>
-                          <Badge variant="outline">Credit Cards</Badge>
-                          <Badge variant="outline">Debit Cards</Badge>
-                          <Badge variant="outline">Wallets</Badge>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex items-center gap-2"
+                            onClick={() => toast({ title: "UPI Payment", description: "Opening UPI app..." })}
+                          >
+                            💳 UPI
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => toast({ title: "Card Payment", description: "Opening card payment..." })}
+                          >
+                            💰 Credit Cards
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => toast({ title: "Debit Card", description: "Opening debit card payment..." })}
+                          >
+                            💳 Debit Cards
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => toast({ title: "Wallet Payment", description: "Opening wallet payment..." })}
+                          >
+                            👛 Wallets
+                          </Button>
                         </div>
                         <div className="mt-3 p-2 bg-background border rounded text-center">
-                          <div className="text-xs text-muted-foreground mb-1">Scan QR to Pay</div>
-                          <div className="w-20 h-20 mx-auto bg-black/10 border-2 border-dashed border-primary/30 rounded flex items-center justify-center">
-                            <span className="text-xs text-primary">QR CODE</span>
+                          <div className="text-xs text-muted-foreground mb-1">Scan QR to Pay ₹{finalAmount}</div>
+                          <div 
+                            className="w-20 h-20 mx-auto bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/50 rounded-lg flex items-center justify-center cursor-pointer hover:shadow-lg transition-smooth"
+                            onClick={() => toast({ 
+                              title: "QR Payment Initiated! 📱", 
+                              description: `Payment of ₹${finalAmount} initiated via QR code` 
+                            })}
+                          >
+                            <div className="text-center">
+                              <div className="text-2xl">📱</div>
+                              <div className="text-xs font-medium">PAY NOW</div>
+                            </div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">₹{finalAmount}</div>
+                          <div className="text-xs text-primary font-medium mt-1">Click to Pay</div>
                         </div>
                       </div>
                       <label className="flex items-center space-x-2 cursor-pointer">

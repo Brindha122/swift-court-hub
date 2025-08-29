@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { 
   User, 
@@ -19,8 +20,102 @@ import {
   Camera,
   Settings,
   Bell,
-  Shield
+  Shield,
+  Plus,
+  X
 } from "lucide-react";
+
+// Favorite Sports Component
+function FavoriteSportsSection() {
+  const { toast } = useToast();
+  const [favoriteSports, setFavoriteSports] = useState(["Badminton", "Tennis", "Basketball"]);
+  const [showAddSports, setShowAddSports] = useState(false);
+  
+  const allSports = [
+    "Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball", 
+    "Table Tennis", "Swimming", "Boxing", "Gym", "Squash", "Cycling",
+    "Running", "Yoga", "Martial Arts", "Hockey", "Golf", "Baseball"
+  ];
+  
+  const availableSports = allSports.filter(sport => !favoriteSports.includes(sport));
+  
+  const addSport = (sport: string) => {
+    setFavoriteSports([...favoriteSports, sport]);
+    toast({
+      title: "Sport Added! 🎯",
+      description: `${sport} has been added to your favorites`,
+    });
+  };
+  
+  const removeSport = (sport: string) => {
+    setFavoriteSports(favoriteSports.filter(s => s !== sport));
+    toast({
+      title: "Sport Removed",
+      description: `${sport} has been removed from favorites`,
+    });
+  };
+  
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {favoriteSports.map((sport) => (
+          <Badge 
+            key={sport} 
+            variant="secondary" 
+            className="cursor-pointer hover:bg-destructive/20 group relative"
+          >
+            {sport}
+            <button 
+              onClick={() => removeSport(sport)}
+              className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X size={12} />
+            </button>
+          </Badge>
+        ))}
+        
+        <Dialog open={showAddSports} onOpenChange={setShowAddSports}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="flex items-center gap-1">
+              <Plus size={14} />
+              Add Sport
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Favorite Sports</DialogTitle>
+            </DialogHeader>
+            <div className="pt-4">
+              <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                {availableSports.map((sport) => (
+                  <Button
+                    key={sport}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      addSport(sport);
+                      if (availableSports.length === 1) {
+                        setShowAddSports(false);
+                      }
+                    }}
+                    className="justify-start"
+                  >
+                    {sport}
+                  </Button>
+                ))}
+              </div>
+              {availableSports.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">
+                  All sports have been added to your favorites!
+                </p>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+}
 
 export default function UserProfile() {
   const { toast } = useToast();
@@ -78,8 +173,20 @@ export default function UserProfile() {
                 <p className="text-muted-foreground mb-4">{email}</p>
                 
                 <div className="flex flex-wrap gap-2 justify-center mb-4">
-                  <Badge variant="secondary">Premium Member</Badge>
-                  <Badge variant="outline">Active Player</Badge>
+                  <Badge 
+                    variant="secondary" 
+                    className="cursor-pointer hover:bg-secondary/80 transition-colors"
+                    onClick={() => toast({ title: "Premium Member 👑", description: "Enjoy exclusive benefits: Priority booking, 20% discounts, free equipment, dedicated support, and premium court access!" })}
+                  >
+                    Premium Member
+                  </Badge>
+                  <Badge 
+                    variant="outline"
+                    className="cursor-pointer hover:bg-accent/20 transition-colors"
+                    onClick={() => toast({ title: "Active Player 🏆", description: "You've played 48+ hours this month! Keep up the great work and stay active!" })}
+                  >
+                    Active Player
+                  </Badge>
                 </div>
                 
                 <div className="space-y-2 text-sm">
@@ -217,12 +324,7 @@ export default function UserProfile() {
                       
                       <div>
                         <h4 className="font-medium mb-3">Favorite Sports</h4>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary">Badminton</Badge>
-                          <Badge variant="outline">Tennis</Badge>
-                          <Badge variant="outline">Basketball</Badge>
-                          <Button variant="outline" size="sm">+ Add Sport</Button>
-                        </div>
+                        <FavoriteSportsSection />
                       </div>
                     </div>
                   </TabsContent>

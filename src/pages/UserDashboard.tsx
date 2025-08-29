@@ -40,24 +40,58 @@ export default function UserDashboard() {
       return;
     }
     
-    const matchedDistricts = districts.filter(district => 
-      district.toLowerCase().includes(query.toLowerCase())
+    // Search in districts AND court names
+    const results = [];
+    
+    districts.forEach(district => {
+      // Check if district matches query
+      if (district.toLowerCase().includes(query.toLowerCase())) {
+        // Add all courts from this district
+        for (let i = 1; i <= 10; i++) {
+          results.push({
+            id: `${district}-${i}`,
+            name: `${district} Sports Complex ${i}`,
+            sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
+            location: `${district}, Tamil Nadu`,
+            price: Math.min(600, 400 + (i * 50)), // Keep prices ≤ 600
+            rating: 4.2 + (i * 0.1),
+            image: venueBadminton,
+            amenities: ["AC", "Parking", "Lockers"],
+            availability: "Available"
+          });
+        }
+      }
+    });
+    
+    // Also search by court names
+    const courtSearchResults = [];
+    const searchTerm = query.toLowerCase();
+    districts.forEach(district => {
+      for (let i = 1; i <= 10; i++) {
+        const courtName = `${district} Sports Complex ${i}`;
+        if (courtName.toLowerCase().includes(searchTerm)) {
+          courtSearchResults.push({
+            id: `${district}-${i}`,
+            name: courtName,
+            sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
+            location: `${district}, Tamil Nadu`,
+            price: Math.min(600, 400 + (i * 50)),
+            rating: 4.2 + (i * 0.1),
+            image: venueBadminton,
+            amenities: ["AC", "Parking", "Lockers"],
+            availability: "Available"
+          });
+        }
+      }
+    });
+    
+    // Combine and deduplicate results
+    const allResults = [...results, ...courtSearchResults];
+    const uniqueResults = allResults.filter((result, index, self) => 
+      index === self.findIndex(r => r.id === result.id)
     );
     
-    const results = matchedDistricts.flatMap(district => 
-      Array.from({ length: 10 }, (_, i) => ({
-        id: `${district}-${i + 1}`,
-        name: `${district} Sports Complex ${i + 1}`,
-        sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
-        location: `${district}, Tamil Nadu`,
-        price: 600 + (i * 100),
-        rating: 4.2 + (i * 0.1),
-        image: venueBadminton,
-        amenities: ["AC", "Parking", "Lockers"],
-        availability: "Available"
-      }))
-    );
-    setSearchResults(results.slice(0, 20));
+    setSearchResults(uniqueResults.slice(0, 20));
   };
 
   // Mock user stats
