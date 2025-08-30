@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
+import venueBasketball from "@/assets/venue-basketball.jpg";
+import venueFootball from "@/assets/venue-football.jpg";
+import venueCricket from "@/assets/venue-cricket.jpg";
+import venueVolleyball from "@/assets/venue-volleyball.jpg";
 
 export default function UserDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,15 +52,28 @@ export default function UserDashboard() {
       if (district.toLowerCase().includes(query.toLowerCase())) {
         // Add all courts from this district
         for (let i = 1; i <= 10; i++) {
+          const sports = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"];
+          const sport = sports[i % 6];
+          const getImageForSport = (sportName) => {
+            switch(sportName) {
+              case 'Tennis': return venueTennis;
+              case 'Basketball': return venueBasketball;
+              case 'Football': return venueFootball;
+              case 'Cricket': return venueCricket;
+              case 'Volleyball': return venueVolleyball;
+              default: return venueBadminton;
+            }
+          };
+          
           results.push({
             id: `${district}-${i}`,
             name: `${district} Sports Complex ${i}`,
-            sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
+            sport: sport,
             location: `${district}, Tamil Nadu`,
-            price: Math.min(600, 400 + (i * 50)), // Keep prices ≤ 600
+            price: Math.floor(Math.random() * (1000 - 400) + 400), // 400-1000 rupees range
             rating: 4.2 + (i * 0.1),
-            image: venueBadminton,
-            amenities: ["AC", "Parking", "Lockers"],
+            image: getImageForSport(sport),
+            amenities: ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria", "Changing Rooms"].slice(0, Math.floor(Math.random() * 4) + 3),
             availability: "Available"
           });
         }
@@ -70,15 +87,28 @@ export default function UserDashboard() {
       for (let i = 1; i <= 10; i++) {
         const courtName = `${district} Sports Complex ${i}`;
         if (courtName.toLowerCase().includes(searchTerm)) {
+          const sports = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"];
+          const sport = sports[i % 6];
+          const getImageForSport = (sportName) => {
+            switch(sportName) {
+              case 'Tennis': return venueTennis;
+              case 'Basketball': return venueBasketball;
+              case 'Football': return venueFootball;
+              case 'Cricket': return venueCricket;
+              case 'Volleyball': return venueVolleyball;
+              default: return venueBadminton;
+            }
+          };
+          
           courtSearchResults.push({
             id: `${district}-${i}`,
             name: courtName,
-            sport: ["Badminton", "Tennis", "Basketball", "Football"][i % 4],
+            sport: sport,
             location: `${district}, Tamil Nadu`,
-            price: Math.min(600, 400 + (i * 50)),
+            price: Math.floor(Math.random() * (1000 - 400) + 400),
             rating: 4.2 + (i * 0.1),
-            image: venueBadminton,
-            amenities: ["AC", "Parking", "Lockers"],
+            image: getImageForSport(sport),
+            amenities: ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria", "Changing Rooms"].slice(0, Math.floor(Math.random() * 4) + 3),
             availability: "Available"
           });
         }

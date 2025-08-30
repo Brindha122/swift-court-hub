@@ -78,8 +78,7 @@ export function VenueCard({
             </div>
             
             <div className="flex items-center text-primary font-semibold">
-              <DollarSign size={16} />
-              <span>{price}/hr</span>
+              <span>₹{price}/hr</span>
             </div>
           </div>
 

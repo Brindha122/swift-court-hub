@@ -23,6 +23,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import heroImage from "@/assets/hero-sports.jpg";
 import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
+import venueBasketball from "@/assets/venue-basketball.jpg";
+import venueFootball from "@/assets/venue-football.jpg";
+import venueCricket from "@/assets/venue-cricket.jpg";
+import venueVolleyball from "@/assets/venue-volleyball.jpg";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,15 +45,18 @@ export default function HomePage() {
   ];
 
   // Generate popular venues from different districts
+  const sports = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"];
+  const sportImages = [venueBadminton, venueTennis, venueBasketball, venueFootball, venueCricket, venueVolleyball];
+  
   const popularVenues = tamilNaduDistricts.slice(0, 4).map((district, index) => ({
     id: `district-${district}`,
     name: `${district} Sports Complex`,
-    sport: ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"][index],
+    sport: sports[index],
     location: `${district}, Tamil Nadu`,
-    price: Math.min(600, 400 + (index * 40)), // Keep prices ≤ 600
+    price: Math.floor(Math.random() * (1000 - 400) + 400), // 400-1000 rupees range
     rating: (4.5 + (index * 0.1)),
-    image: index % 2 === 0 ? venueBadminton : venueTennis,
-    amenities: ["AC", "Parking", "Lockers"],
+    image: sportImages[index],
+    amenities: ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria"],
     availability: "Available",
     district: district
   }));
@@ -162,7 +169,7 @@ export default function HomePage() {
                 <CardContent className="p-4 text-center">
                   <div className="text-3xl mb-2">🏟️</div>
                   <h3 className="font-semibold mb-1 text-sm">{district}</h3>
-                  <p className="text-xs text-muted-foreground">100+ courts</p>
+                  <p className="text-xs text-muted-foreground">10+ courts</p>
                   <div className="flex flex-wrap justify-center gap-1 mt-2">
                     {["🏸", "🎾", "🏀", "⚽"].map((icon, i) => (
                       <span key={i} className="text-xs">{icon}</span>

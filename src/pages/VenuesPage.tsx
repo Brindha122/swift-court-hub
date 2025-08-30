@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import venueBadminton from "@/assets/venue-badminton.jpg";
 import venueTennis from "@/assets/venue-tennis.jpg";
+import venueBasketball from "@/assets/venue-basketball.jpg";
+import venueFootball from "@/assets/venue-football.jpg";
+import venueCricket from "@/assets/venue-cricket.jpg";
+import venueVolleyball from "@/assets/venue-volleyball.jpg";
 
 export default function VenuesPage() {
   const [searchParams] = useSearchParams();
@@ -57,7 +61,7 @@ export default function VenuesPage() {
     "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"
   ];
 
-  const sportsTypes = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball", "Table Tennis", "Swimming", "Boxing", "Gym"];
+  const sportsTypes = ["Badminton", "Tennis", "Basketball", "Football", "Cricket", "Volleyball"];
   
   // Generate venues for all districts
   const generateVenues = () => {
@@ -65,11 +69,25 @@ export default function VenuesPage() {
     let venueId = 1;
     
     tamilNaduDistricts.forEach(district => {
-      // Generate 10 courts per district
+      // Generate 10 courts per district, ensuring all sports are covered
+      const sportsPerDistrict = [...sportsTypes];
+      
       for (let i = 1; i <= 10; i++) {
-        const sport = sportsTypes[Math.floor(Math.random() * sportsTypes.length)];
-        const price = Math.floor(Math.random() * (600 - 400) + 400); // Keep prices ≤ 600
+        const sport = sportsPerDistrict[i % sportsTypes.length];
+        const price = Math.floor(Math.random() * (1000 - 400) + 400); // 400-1000 rupees range
         const rating = (Math.random() * (5.0 - 3.5) + 3.5).toFixed(1);
+        
+        // Get appropriate image for sport
+        const getImageForSport = (sportName) => {
+          switch(sportName) {
+            case 'Tennis': return venueTennis;
+            case 'Basketball': return venueBasketball;
+            case 'Football': return venueFootball;
+            case 'Cricket': return venueCricket;
+            case 'Volleyball': return venueVolleyball;
+            default: return venueBadminton;
+          }
+        };
         
         venues.push({
           id: venueId.toString(),
@@ -79,8 +97,8 @@ export default function VenuesPage() {
           district: district,
           price: price,
           rating: parseFloat(rating),
-          image: sport.includes('Tennis') ? venueTennis : venueBadminton,
-          amenities: ["AC", "Parking", "Lockers", "Equipment", "Changing Rooms"].slice(0, Math.floor(Math.random() * 3) + 2),
+          image: getImageForSport(sport),
+          amenities: ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria", "Changing Rooms"].slice(0, Math.floor(Math.random() * 4) + 3),
           availability: Math.random() > 0.1 ? "Available" : "Booked"
         });
         venueId++;
@@ -125,9 +143,9 @@ export default function VenuesPage() {
     
     const matchesPrice = !priceRange || 
                         (priceRange === "under-500" && venue.price < 500) ||
-                        (priceRange === "500-1000" && venue.price >= 500 && venue.price < 1000) ||
-                        (priceRange === "1000-1500" && venue.price >= 1000 && venue.price < 1500) ||
-                        (priceRange === "above-1500" && venue.price >= 1500);
+                        (priceRange === "500-750" && venue.price >= 500 && venue.price < 750) ||
+                        (priceRange === "750-1000" && venue.price >= 750 && venue.price < 1000) ||
+                        (priceRange === "above-1000" && venue.price >= 1000);
 
     return matchesSearch && matchesSports && matchesAmenities && matchesPrice;
   });
@@ -271,9 +289,9 @@ export default function VenuesPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="under-500">Under ₹500</SelectItem>
-                      <SelectItem value="500-1000">₹500 - ₹1,000</SelectItem>
-                      <SelectItem value="1000-1500">₹1,000 - ₹1,500</SelectItem>
-                      <SelectItem value="above-1500">Above ₹1,500</SelectItem>
+                      <SelectItem value="500-750">₹500 - ₹750</SelectItem>
+                      <SelectItem value="750-1000">₹750 - ₹1,000</SelectItem>
+                      <SelectItem value="above-1000">Above ₹1,000</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
