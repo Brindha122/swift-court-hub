@@ -14,32 +14,55 @@ interface Notification {
 
 export function NotificationBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "success",
-      title: "Booking Confirmed",
-      message: "Your court booking at Elite Sports Complex has been confirmed for today 6:00 PM",
-      timestamp: new Date(),
-      read: false
-    },
-    {
-      id: "2", 
-      type: "info",
-      title: "New Courts Available",
-      message: "10 new badminton courts added in Chennai district",
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-      read: false
-    },
-    {
-      id: "3",
-      type: "warning", 
-      title: "Payment Reminder",
-      message: "Complete payment for your booking at Champions Tennis Club",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60),
-      read: true
+  
+  // Get bookings from localStorage to generate dynamic notifications
+  const getBookingNotifications = () => {
+    try {
+      const bookingsData = localStorage.getItem('userBookings');
+      const bookings = bookingsData ? JSON.parse(bookingsData) : [];
+      
+      const notifications: Notification[] = [];
+      
+      // Create notifications for recent bookings
+      bookings.forEach((booking: any, index: number) => {
+        if (booking.status === 'confirmed') {
+          notifications.push({
+            id: `booking-${booking.id}`,
+            type: 'success' as const,
+            title: 'Booking Confirmed',
+            message: `Your ${booking.sport} court booking at ${booking.venue} has been confirmed for ${booking.date} ${booking.time}`,
+            timestamp: new Date(Date.now() - index * 1000 * 60 * 30), // Stagger timestamps
+            read: false
+          });
+        }
+      });
+      
+      // Add some default notifications if no bookings
+      if (notifications.length === 0) {
+        notifications.push({
+          id: "welcome",
+          type: "info" as const,
+          title: "Welcome to QuickCourt!",
+          message: "Discover and book premium sports facilities near you",
+          timestamp: new Date(),
+          read: false
+        });
+      }
+      
+      return notifications;
+    } catch {
+      return [{
+        id: "welcome",
+        type: "info" as const,
+        title: "Welcome to QuickCourt!",
+        message: "Discover and book premium sports facilities near you",
+        timestamp: new Date(),
+        read: false
+      }];
     }
-  ]);
+  };
+
+  const [notifications, setNotifications] = useState<Notification[]>(getBookingNotifications());
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -47,6 +70,10 @@ export function NotificationBar() {
     setNotifications(prev => 
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
+  };
+  
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
   const removeNotification = (id: string) => {
@@ -91,14 +118,26 @@ export function NotificationBar() {
         <div className="absolute right-0 top-full mt-2 w-80 bg-background border border-border rounded-lg shadow-lg z-50">
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">Notifications</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsOpen(false)}
-              >
-                <X size={16} />
-              </Button>
+              <h3 className="font-medium">Notifications {unreadCount > 0 && `(${unreadCount})`}</h3>
+              <div className="flex items-center space-x-2">
+                {unreadCount > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={markAllAsRead}
+                    className="text-xs"
+                  >
+                    Mark all read
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <X size={16} />
+                </Button>
+              </div>
             </div>
           </div>
 

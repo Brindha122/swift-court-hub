@@ -17,7 +17,8 @@ import {
   Zap,
   Shield,
   Clock,
-  X
+  X,
+  Activity
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import heroImage from "@/assets/hero-sports.jpg";
@@ -120,21 +121,99 @@ export default function HomePage() {
               tennis clubs, find the perfect venue for your game.
             </p>
             
-            {/* Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
-                <Input
-                  placeholder="Search for venues, sports, or locations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 py-3 bg-background/95 backdrop-blur-sm border-border/50"
-                />
+            {/* Enhanced Search Bar */}
+            <div className="relative mb-8">
+              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-background/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-lg">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
+                  <Input
+                    placeholder="Search by location (e.g. Chennai, Salem) or court name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 py-4 bg-transparent border-0 focus:ring-0 text-lg"
+                  />
+                </div>
+                <Button 
+                  variant="accent" 
+                  size="lg" 
+                  className="px-8 py-4 rounded-xl"
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      // Check if it's a district search
+                      const matchingDistrict = tamilNaduDistricts.find(district => 
+                        district.toLowerCase().includes(searchQuery.toLowerCase())
+                      );
+                      
+                      if (matchingDistrict) {
+                        navigate(`/venues?district=${matchingDistrict.toLowerCase()}`);
+                      } else {
+                        // Search for court names
+                        navigate(`/venues?search=${encodeURIComponent(searchQuery)}`);
+                      }
+                    } else {
+                      navigate('/venues');
+                    }
+                  }}
+                >
+                  <MapPin size={20} className="mr-2" />
+                  Find Courts
+                </Button>
               </div>
-              <Button variant="accent" size="lg" className="px-8">
-                <MapPin size={20} className="mr-2" />
-                Find Courts
-              </Button>
+              
+              {/* Search Suggestions */}
+              {searchQuery && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-lg z-50 max-h-64 overflow-y-auto">
+                  {tamilNaduDistricts
+                    .filter(district => district.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .slice(0, 5)
+                    .map(district => (
+                      <div
+                        key={district}
+                        className="p-3 hover:bg-muted cursor-pointer border-b border-border/50 last:border-0"
+                        onClick={() => {
+                          setSearchQuery(district);
+                          navigate(`/venues?district=${district.toLowerCase()}`);
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <MapPin size={16} className="text-primary" />
+                          <div>
+                            <div className="font-medium">{district}</div>
+                            <div className="text-sm text-muted-foreground">10+ courts available</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  
+                  {/* Popular courts suggestions */}
+                  {popularVenues
+                    .filter(venue => 
+                      venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      venue.location.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                    .slice(0, 3)
+                    .map(venue => (
+                      <div
+                        key={venue.id}
+                        className="p-3 hover:bg-muted cursor-pointer border-b border-border/50 last:border-0"
+                        onClick={() => {
+                          setSearchQuery(venue.name);
+                          navigate(`/venues?search=${encodeURIComponent(venue.name)}`);
+                        }}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Activity size={16} className="text-secondary" />
+                          <div>
+                            <div className="font-medium">{venue.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {venue.sport} • {venue.location} • ₹{venue.price}/hr
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
             
             <div className="flex flex-wrap gap-3">
