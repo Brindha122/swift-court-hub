@@ -58,7 +58,7 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
   const handleLogout = () => {
     // In a real app, you would clear auth tokens, user data, etc.
     localStorage.clear();
-    navigate('/auth');
+    navigate('/');
   };
 
   return (

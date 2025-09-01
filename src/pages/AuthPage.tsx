@@ -1,271 +1,419 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Eye, 
+  EyeOff, 
+  Mail, 
+  Lock, 
+  User, 
+  Phone,
+  Trophy,
+  Star,
+  Shield,
+  Zap,
+  CheckCircle,
+  LogIn,
+  UserPlus
+} from "lucide-react";
 
 export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string>("");
-  const [showOtpStep, setShowOtpStep] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: ""
+  });
+  const [signupForm, setSignupForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    userType: "user"
+  });
+  
+  const navigate = useNavigate();
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-      
-      // Auto-focus next input
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
-        nextInput?.focus();
-      }
-    }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Mock login - will be replaced with Supabase authentication
+    console.log("Login:", loginForm);
+    // Navigate to home page after login
+    navigate("/home");
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      prevInput?.focus();
-    }
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Mock signup - will be replaced with Supabase authentication
+    console.log("Signup:", signupForm);
+    // Navigate to home page after signup
+    navigate("/home");
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case "user": return "bg-primary/10 text-primary border-primary/20";
-      case "facility_owner": return "bg-secondary/10 text-secondary border-secondary/20";
-      case "admin": return "bg-accent/10 text-accent border-accent/20";
-      default: return "";
+  const features = [
+    {
+      icon: Trophy,
+      title: "3,800+ Premium Courts",
+      description: "Access to verified sports facilities across Tamil Nadu"
+    },
+    {
+      icon: Zap,
+      title: "Instant Booking",
+      description: "Book courts in seconds with real-time availability"
+    },
+    {
+      icon: Shield,
+      title: "Secure Payments",
+      description: "Safe and encrypted payment processing"
+    },
+    {
+      icon: Star,
+      title: "Top Rated",
+      description: "India's #1 sports booking platform"
     }
-  };
-
-  if (showOtpStep) {
-    return (
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="self-start mb-4"
-              onClick={() => setShowOtpStep(false)}
-            >
-              <ArrowLeft size={16} className="mr-2" />
-              Back
-            </Button>
-            <CardTitle className="text-2xl">Verify Your Email</CardTitle>
-            <CardDescription>
-              We've sent a 6-digit code to your email address. Enter it below to complete your registration.
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <Label>Enter OTP Code</Label>
-              <div className="flex space-x-2 justify-center">
-                {otp.map((digit, index) => (
-                  <Input
-                    key={index}
-                    id={`otp-${index}`}
-                    type="text"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-12 h-12 text-center text-lg font-semibold"
-                  />
-                ))}
-              </div>
-              <p className="text-center text-sm text-muted-foreground">
-                Didn't receive the code? 
-                <Button variant="link" className="p-0 h-auto ml-1">
-                  Resend OTP
-                </Button>
-              </p>
-            </div>
-            
-            <Button variant="hero" size="lg" className="w-full">
-              Verify & Continue
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">Q</span>
+    <div className="min-h-screen bg-gradient-hero flex">
+      {/* Left Side - Branding & Features */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-primary p-12 flex-col justify-between text-primary-foreground">
+        <div>
+          {/* Logo */}
+          <div className="flex items-center space-x-3 mb-12">
+            <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <span className="text-primary-foreground font-bold text-2xl">Q</span>
             </div>
-            <span className="text-xl font-bold">QuickCourt</span>
-          </Link>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>
-            Sign in to your account or create a new one
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="login" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
+            <div>
+              <h1 className="text-3xl font-bold">QuickCourt</h1>
+              <p className="text-primary-foreground/80">Sports Booking Platform</p>
+            </div>
+          </div>
+
+          {/* Main Heading */}
+          <div className="mb-12">
+            <Badge className="mb-6 bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30">
+              🏆 India's #1 Sports Booking Platform
+            </Badge>
             
-            <TabsContent value="login" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="Enter your email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="login-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
-                </div>
-                
-                <Button variant="link" className="p-0 h-auto text-sm">
-                  Forgot your password?
-                </Button>
-                
-                <Button variant="hero" size="lg" className="w-full">
-                  Sign In
-                </Button>
-              </div>
-            </TabsContent>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              Your Perfect
+              <span className="block text-accent">Sports Court</span>
+              Awaits
+            </h2>
             
-            <TabsContent value="signup" className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    placeholder="Enter your full name"
-                  />
+            <p className="text-xl text-primary-foreground/90 leading-relaxed">
+              Join thousands of sports enthusiasts who trust QuickCourt for seamless court bookings across Tamil Nadu.
+            </p>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-6">
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-start space-x-3">
+                <div className="w-10 h-10 bg-primary-foreground/20 rounded-lg flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                  <feature.icon size={20} className="text-primary-foreground" />
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="Enter your email"
-                  />
+                <div>
+                  <h3 className="font-semibold mb-1">{feature.title}</h3>
+                  <p className="text-sm text-primary-foreground/80">{feature.description}</p>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="signup-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="confirm-password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>Select Role</Label>
-                  <Select value={selectedRole} onValueChange={setSelectedRole}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">
-                        <div className="flex items-center space-x-2">
-                          <span>Regular User</span>
-                          <Badge className={getRoleBadgeColor("user")}>Player</Badge>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="facility_owner">
-                        <div className="flex items-center space-x-2">
-                          <span>Facility Owner</span>
-                          <Badge className={getRoleBadgeColor("facility_owner")}>Owner</Badge>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="admin">
-                        <div className="flex items-center space-x-2">
-                          <span>Administrator</span>
-                          <Badge className={getRoleBadgeColor("admin")}>Admin</Badge>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <Button 
-                  variant="hero" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => setShowOtpStep(true)}
-                >
-                  Create Account
-                </Button>
               </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-8 pt-12 border-t border-primary-foreground/20">
+          <div className="text-center">
+            <div className="text-2xl font-bold mb-1">50K+</div>
+            <div className="text-sm text-primary-foreground/80">Happy Users</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold mb-1">100K+</div>
+            <div className="text-sm text-primary-foreground/80">Bookings</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold mb-1">38</div>
+            <div className="text-sm text-primary-foreground/80">Districts</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Authentication Forms */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
+            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xl">Q</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                QuickCourt
+              </h1>
+            </div>
+          </div>
+
+          <Card className="shadow-card border-border/50">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
+              <CardDescription>
+                Access your sports booking account
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="p-6">
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="login" className="flex items-center space-x-2">
+                    <LogIn size={16} />
+                    <span>Login</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="signup" className="flex items-center space-x-2">
+                    <UserPlus size={16} />
+                    <span>Sign Up</span>
+                  </TabsTrigger>
+                </TabsList>
+
+                {/* Login Tab */}
+                <TabsContent value="login">
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={loginForm.email}
+                          onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="login-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          value={loginForm.password}
+                          onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                          className="pl-10 pr-10"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <input type="checkbox" id="remember" className="rounded" />
+                        <Label htmlFor="remember" className="text-sm text-muted-foreground">
+                          Remember me
+                        </Label>
+                      </div>
+                      <Button variant="link" className="p-0 h-auto text-sm">
+                        Forgot password?
+                      </Button>
+                    </div>
+
+                    <Button type="submit" className="w-full" size="lg" variant="hero">
+                      <CheckCircle size={18} className="mr-2" />
+                      Sign In
+                    </Button>
+                  </form>
+                </TabsContent>
+
+                {/* Signup Tab */}
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignup} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Full Name</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="signup-name"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={signupForm.name}
+                          onChange={(e) => setSignupForm({...signupForm, name: e.target.value})}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="signup-email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={signupForm.email}
+                          onChange={(e) => setSignupForm({...signupForm, email: e.target.value})}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-phone">Phone Number</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="signup-phone"
+                          type="tel"
+                          placeholder="Enter your phone number"
+                          value={signupForm.phone}
+                          onChange={(e) => setSignupForm({...signupForm, phone: e.target.value})}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="signup-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Create a password"
+                          value={signupForm.password}
+                          onChange={(e) => setSignupForm({...signupForm, password: e.target.value})}
+                          className="pl-10 pr-10"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-confirm-password">Confirm Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+                        <Input
+                          id="signup-confirm-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Confirm your password"
+                          value={signupForm.confirmPassword}
+                          onChange={(e) => setSignupForm({...signupForm, confirmPassword: e.target.value})}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Account Type</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          variant={signupForm.userType === "user" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSignupForm({...signupForm, userType: "user"})}
+                        >
+                          User
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={signupForm.userType === "owner" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSignupForm({...signupForm, userType: "owner"})}
+                        >
+                          Facility Owner
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-2">
+                      <input type="checkbox" id="terms" className="rounded mt-1" required />
+                      <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed">
+                        I agree to the{" "}
+                        <Button variant="link" className="p-0 h-auto text-sm">
+                          Terms of Service
+                        </Button>{" "}
+                        and{" "}
+                        <Button variant="link" className="p-0 h-auto text-sm">
+                          Privacy Policy
+                        </Button>
+                      </Label>
+                    </div>
+
+                    <Button type="submit" className="w-full" size="lg" variant="hero">
+                      <UserPlus size={18} className="mr-2" />
+                      Create Account
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+
+              {/* Social Login */}
+              <div className="mt-6">
+                <div className="relative">
+                  <Separator className="my-4" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="px-2 text-muted-foreground text-sm bg-background">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <Button variant="outline" className="w-full">
+                    <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Google
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Facebook
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Footer */}
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            By continuing, you agree to QuickCourt's Terms of Service and Privacy Policy
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
