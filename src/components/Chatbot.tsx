@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,13 @@ export function Chatbot({ className = "" }: ChatbotProps) {
     }
   ]);
   const [inputValue, setInputValue] = useState("");
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const quickQuestions = [
     "How to book a court?",
@@ -158,8 +165,8 @@ export function Chatbot({ className = "" }: ChatbotProps) {
           
           <CardContent className="flex-1 flex flex-col p-3 space-y-3">
             {/* Messages */}
-            <ScrollArea className="flex-1 pr-2">
-              <div className="space-y-3">
+            <ScrollArea ref={scrollAreaRef} className="flex-1 pr-2 h-[300px]">
+              <div className="space-y-3 pb-4">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -191,6 +198,7 @@ export function Chatbot({ className = "" }: ChatbotProps) {
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
             </ScrollArea>
 
