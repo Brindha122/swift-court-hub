@@ -40,20 +40,84 @@ export default function AuthPage() {
   
   const navigate = useNavigate();
 
+  const [loginError, setLoginError] = useState("");
+  const [signupError, setSignupError] = useState("");
+  const [activeTab, setActiveTab] = useState("login");
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - will be replaced with Supabase authentication
-    console.log("Login:", loginForm);
-    // Navigate to home page after login
-    navigate("/home");
+    setLoginError("");
+    
+    // Basic validation
+    if (!loginForm.email || !loginForm.password) {
+      setLoginError("Please fill all fields");
+      return;
+    }
+
+    // Mock validation - check if user exists in localStorage
+    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+    const user = users.find((u: any) => u.email === loginForm.email && u.password === loginForm.password);
+    
+    if (user) {
+      // Set user session
+      localStorage.setItem("currentUser", JSON.stringify(user));
+      localStorage.setItem("isLoggedIn", "true");
+      console.log("Login successful:", user);
+      navigate("/home");
+    } else {
+      setLoginError("Invalid email or password");
+    }
   };
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock signup - will be replaced with Supabase authentication
-    console.log("Signup:", signupForm);
-    // Navigate to home page after signup
-    navigate("/home");
+    setSignupError("");
+    
+    // Basic validation
+    if (!signupForm.name || !signupForm.email || !signupForm.phone || !signupForm.password || !signupForm.confirmPassword) {
+      setSignupError("Please fill all fields");
+      return;
+    }
+
+    if (signupForm.password !== signupForm.confirmPassword) {
+      setSignupError("Passwords don't match");
+      return;
+    }
+
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+    const existingUser = users.find((u: any) => u.email === signupForm.email);
+    
+    if (existingUser) {
+      setSignupError("User already exists with this email");
+      return;
+    }
+
+    // Save user to localStorage
+    const newUser = {
+      name: signupForm.name,
+      email: signupForm.email,
+      phone: signupForm.phone,
+      password: signupForm.password,
+      userType: signupForm.userType
+    };
+    
+    users.push(newUser);
+    localStorage.setItem("registeredUsers", JSON.stringify(users));
+    
+    console.log("Signup successful:", newUser);
+    
+    // Switch to login tab after successful signup
+    setActiveTab("login");
+    setLoginForm({ email: signupForm.email, password: "" });
+    setSignupForm({
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      userType: "user"
+    });
   };
 
   const features = [
@@ -169,7 +233,7 @@ export default function AuthPage() {
             </CardHeader>
 
             <CardContent className="p-6">
-              <Tabs defaultValue="login" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-6">
                   <TabsTrigger value="login" className="flex items-center space-x-2">
                     <LogIn size={16} />
@@ -234,6 +298,12 @@ export default function AuthPage() {
                         Forgot password?
                       </Button>
                     </div>
+
+                    {loginError && (
+                      <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                        {loginError}
+                      </div>
+                    )}
 
                     <Button type="submit" className="w-full" size="lg" variant="hero">
                       <CheckCircle size={18} className="mr-2" />
@@ -367,6 +437,12 @@ export default function AuthPage() {
                         </Button>
                       </Label>
                     </div>
+
+                    {signupError && (
+                      <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                        {signupError}
+                      </div>
+                    )}
 
                     <Button type="submit" className="w-full" size="lg" variant="hero">
                       <UserPlus size={18} className="mr-2" />
