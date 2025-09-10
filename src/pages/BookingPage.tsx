@@ -19,8 +19,28 @@ import {
   ArrowLeft,
   User,
   Phone,
-  Mail
+  Mail,
+  Users,
+  Plus,
+  Minus
 } from "lucide-react";
+
+// Sport configurations with min/max players
+const SPORT_CONFIGS = {
+  cricket: { min: 11, max: 25, name: "Cricket" },
+  basketball: { min: 5, max: 15, name: "Basketball" },
+  volleyball: { min: 6, max: 15, name: "Volleyball" },
+  tennis: { min: 2, max: 5, name: "Tennis" },
+  football: { min: 11, max: 25, name: "Football" },
+  badminton: { min: 2, max: 4, name: "Badminton" }
+};
+
+interface PlayerDetail {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+}
 
 export default function BookingPage() {
   const [searchParams] = useSearchParams();
@@ -28,24 +48,48 @@ export default function BookingPage() {
   const { toast } = useToast();
   
   const venueId = searchParams.get('venue');
+  const sportParam = searchParams.get('sport') || 'badminton';
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  const [playerName, setPlayerName] = useState("");
-  const [playerPhone, setPlayerPhone] = useState("");
-  const [playerEmail, setPlayerEmail] = useState("");
+  const [playerCount, setPlayerCount] = useState(0);
+  const [players, setPlayers] = useState<PlayerDetail[]>([]);
   const [specialRequests, setSpecialRequests] = useState("");
   const [isBooking, setIsBooking] = useState(false);
+
+  // Get sport configuration
+  const sportConfig = SPORT_CONFIGS[sportParam.toLowerCase() as keyof typeof SPORT_CONFIGS] || SPORT_CONFIGS.badminton;
 
   // Mock venue data - in real app, fetch by venueId
   const venue = {
     id: "1",
     name: "Elite Sports Complex",
-    sport: "Badminton",
+    sport: sportConfig.name,
     location: "Downtown Mumbai",
     price: 600, // Fixed at ≤ 600
     rating: 4.8,
     amenities: ["AC", "Parking", "Lockers", "Equipment"],
     image: "/assets/venue-badminton.jpg"
+  };
+
+  // Player management functions
+  const updatePlayerCount = (count: number) => {
+    setPlayerCount(count);
+    const newPlayers: PlayerDetail[] = [];
+    for (let i = 0; i < count; i++) {
+      newPlayers.push({
+        id: i + 1,
+        name: players[i]?.name || "",
+        phone: players[i]?.phone || "",
+        email: players[i]?.email || ""
+      });
+    }
+    setPlayers(newPlayers);
+  };
+
+  const updatePlayer = (playerId: number, field: keyof Omit<PlayerDetail, 'id'>, value: string) => {
+    setPlayers(prev => prev.map(player => 
+      player.id === playerId ? { ...player, [field]: value } : player
+    ));
   };
 
   // Mock available time slots
@@ -61,10 +105,21 @@ export default function BookingPage() {
   ];
 
   const handleBooking = async () => {
-    if (!selectedDate || !selectedTime || !playerName || !playerPhone) {
+    if (!selectedDate || !selectedTime || playerCount === 0) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields",
+        description: "Please select date, time and number of players",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate all player details
+    const incompletePlayer = players.find(player => !player.name || !player.phone);
+    if (incompletePlayer) {
+      toast({
+        title: "Incomplete Player Details",
+        description: `Please fill in all required details for Player ${incompletePlayer.id}`,
         variant: "destructive"
       });
       return;
@@ -77,7 +132,7 @@ export default function BookingPage() {
       setIsBooking(false);
       toast({
         title: "Booking Confirmed! 🎉",
-        description: "Your court has been booked successfully",
+        description: `Court booked successfully for ${playerCount} players`,
       });
       
       // Navigate to bookings page
@@ -85,8 +140,8 @@ export default function BookingPage() {
     }, 2000);
   };
 
-  const totalAmount = venue.price;
-  const serviceFee = Math.round(venue.price * 0.05);
+  const totalAmount = venue.price * Math.max(1, playerCount);
+  const serviceFee = Math.round(totalAmount * 0.05);
   const finalAmount = totalAmount + serviceFee;
 
   return (
@@ -193,60 +248,146 @@ export default function BookingPage() {
               </CardContent>
             </Card>
 
+            {/* Player Count Selection */}
+            {selectedDate && selectedTime && (
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="mr-2" size={20} />
+                    Select Number of Players
+                  </CardTitle>
+                  <CardDescription>
+                    For {sportConfig.name}: Minimum {sportConfig.min} players, Maximum {sportConfig.max} players
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-center space-x-4 mb-6">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updatePlayerCount(Math.max(sportConfig.min, playerCount - 1))}
+                      disabled={playerCount <= sportConfig.min}
+                    >
+                      <Minus size={16} />
+                    </Button>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-primary">{playerCount}</div>
+                      <div className="text-sm text-muted-foreground">Players</div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updatePlayerCount(Math.min(sportConfig.max, playerCount + 1))}
+                      disabled={playerCount >= sportConfig.max}
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+                  
+                  {playerCount === 0 && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {Array.from({ length: sportConfig.max - sportConfig.min + 1 }, (_, i) => {
+                        const count = sportConfig.min + i;
+                        return (
+                          <Button
+                            key={count}
+                            variant="outline"
+                            onClick={() => updatePlayerCount(count)}
+                            className="h-16 flex flex-col"
+                          >
+                            <span className="text-xl font-bold">{count}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {count === sportConfig.min ? "Min" : count === sportConfig.max ? "Max" : "Players"}
+                            </span>
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Player Details */}
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="mr-2" size={20} />
-                  Player Details
-                </CardTitle>
-                <CardDescription>Primary player information for the booking</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="playerName">Full Name *</Label>
-                  <Input
-                    id="playerName"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {playerCount > 0 && (
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="mr-2" size={20} />
+                    Player Details ({playerCount} players)
+                  </CardTitle>
+                  <CardDescription>Fill in details for all {playerCount} players</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {players.map((player, index) => (
+                    <div key={player.id} className="p-4 border border-border/30 rounded-lg bg-muted/20">
+                      <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                          {index + 1}
+                        </div>
+                        <h4 className="font-medium">Player {index + 1}</h4>
+                        {index === 0 && <Badge variant="secondary" className="ml-2">Lead Player</Badge>}
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor={`player-${player.id}-name`}>Full Name *</Label>
+                          <Input
+                            id={`player-${player.id}-name`}
+                            value={player.name}
+                            onChange={(e) => updatePlayer(player.id, 'name', e.target.value)}
+                            placeholder="Enter full name"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor={`player-${player.id}-phone`}>Phone Number *</Label>
+                            <Input
+                              id={`player-${player.id}-phone`}
+                              value={player.phone}
+                              onChange={(e) => updatePlayer(player.id, 'phone', e.target.value)}
+                              placeholder="+91 98765 43210"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`player-${player.id}-email`}>Email</Label>
+                            <Input
+                              id={`player-${player.id}-email`}
+                              type="email"
+                              value={player.email}
+                              onChange={(e) => updatePlayer(player.id, 'email', e.target.value)}
+                              placeholder="player@example.com"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Special Requests */}
+            {playerCount > 0 && (
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle>Additional Information</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <div>
-                    <Label htmlFor="playerPhone">Phone Number *</Label>
-                    <Input
-                      id="playerPhone"
-                      value={playerPhone}
-                      onChange={(e) => setPlayerPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
+                    <Label htmlFor="specialRequests">Special Requests (Optional)</Label>
+                    <Textarea
+                      id="specialRequests"
+                      value={specialRequests}
+                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      placeholder="Any special requirements or requests..."
+                      rows={3}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="playerEmail">Email</Label>
-                    <Input
-                      id="playerEmail"
-                      type="email"
-                      value={playerEmail}
-                      onChange={(e) => setPlayerEmail(e.target.value)}
-                      placeholder="your.email@example.com"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="specialRequests">Special Requests (Optional)</Label>
-                  <Textarea
-                    id="specialRequests"
-                    value={specialRequests}
-                    onChange={(e) => setSpecialRequests(e.target.value)}
-                    placeholder="Any special requirements or requests..."
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Booking Summary */}
@@ -280,6 +421,18 @@ export default function BookingPage() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Time</span>
                       <span className="font-medium">{selectedTime}</span>
+                    </div>
+                  )}
+                  
+                  {playerCount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Players</span>
+                      <div className="text-right">
+                        <span className="font-medium">{playerCount} players</span>
+                        <div className="text-xs text-muted-foreground">
+                          ₹{venue.price} × {playerCount}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -378,7 +531,7 @@ export default function BookingPage() {
                   className="w-full mt-6" 
                   size="lg"
                   onClick={handleBooking}
-                  disabled={!selectedDate || !selectedTime || !playerName || !playerPhone || isBooking}
+                  disabled={!selectedDate || !selectedTime || playerCount === 0 || players.some(p => !p.name || !p.phone) || isBooking}
                 >
                   {isBooking ? (
                     <>
