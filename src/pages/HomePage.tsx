@@ -230,7 +230,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Quick Access Cards */}
+      {/* Popular Sports */}
       <section className="py-16 bg-gradient-card">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -238,22 +238,30 @@ export default function HomePage() {
             <p className="text-muted-foreground text-lg">Choose from hundreds of verified venues</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {tamilNaduDistricts.map((district, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {[
+              { name: "Football", image: venueFootball, icon: "⚽", count: "200+" },
+              { name: "Volleyball", image: venueVolleyball, icon: "🏐", count: "180+" },
+              { name: "Tennis", image: venueTennis, icon: "🎾", count: "350+" },
+              { name: "Badminton", image: venueBadminton, icon: "🏸", count: "400+" },
+              { name: "Basketball", image: venueBasketball, icon: "🏀", count: "220+" },
+              { name: "Cricket", image: venueCricket, icon: "🏏", count: "160+" }
+            ].map((sport) => (
               <Card 
-                key={district} 
-                className="group cursor-pointer hover:shadow-card transition-smooth border-border/50"
-                onClick={() => navigate(`/venues?district=${district.toLowerCase()}`)}
+                key={sport.name} 
+                className="group cursor-pointer hover:shadow-card transition-smooth border-border/50 overflow-hidden relative h-48"
+                onClick={() => navigate(`/venues?sport=${sport.name.toLowerCase()}`)}
               >
-                <CardContent className="p-4 text-center">
-                  <div className="text-3xl mb-2">🏟️</div>
-                  <h3 className="font-semibold mb-1 text-sm">{district}</h3>
-                  <p className="text-xs text-muted-foreground">10+ courts</p>
-                  <div className="flex flex-wrap justify-center gap-1 mt-2">
-                    {["🏸", "🎾", "🏀", "⚽"].map((icon, i) => (
-                      <span key={i} className="text-xs">{icon}</span>
-                    ))}
-                  </div>
+                <div 
+                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                  style={{ backgroundImage: `url(${sport.image})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                </div>
+                <CardContent className="relative z-10 p-4 h-full flex flex-col justify-end text-white">
+                  <div className="text-3xl mb-2">{sport.icon}</div>
+                  <h3 className="font-bold text-lg mb-1">{sport.name}</h3>
+                  <p className="text-sm text-white/80">{sport.count} courts</p>
                 </CardContent>
               </Card>
             ))}
