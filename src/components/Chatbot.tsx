@@ -30,7 +30,7 @@ export function Chatbot({ className = "" }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content: "Hi! I'm your QuickCourt assistant. I can help you with booking courts, finding facilities, and answering questions about our platform. How can I help you today?",
+      content: "Hi! I'm your QuickCourt assistant. I can help you with booking courts, finding facilities, and answering questions about our platform. I can also help you book courts directly through chat! How can I help you today?",
       sender: "bot",
       timestamp: new Date()
     }
@@ -45,23 +45,36 @@ export function Chatbot({ className = "" }: ChatbotProps) {
   }, [messages]);
 
   const quickQuestions = [
+    "I want to book a court",
     "How to book a court?",
-    "What can admins do?", 
-    "What features do owners have?",
+    "What sports are available?",
+    "Show me venue prices",
     "How to cancel booking?",
-    "Payment options?",
-    "How to become facility owner?"
+    "Payment options?"
   ];
 
   const getBotResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
+    // Booking intent detection
+    if (message.includes("i want to book") || message.includes("book now") || message.includes("make a booking")) {
+      return "Great! I'd love to help you book a court. 🏆\n\nTo complete your booking through our chat system, I'll need to store your booking details in our database. For this feature to work, we need to connect to our backend system.\n\nFor now, you can easily book by:\n1) Go to 'Venues' page\n2) Select your sport and venue\n3) Choose date, time & players\n4) Complete booking\n\nWould you like me to guide you through the booking process?";
+    }
+    
     if (message.includes("book") || message.includes("reservation")) {
-      return "To book a court: 1) Browse venues on our Venues page 2) Select your preferred court and time slot 3) Choose payment method 4) Confirm booking. You'll receive instant confirmation!";
+      return "To book a court: 1) Browse venues on our Venues page 2) Select your preferred court and time slot 3) Choose date, time and number of players 4) Fill player details 5) Choose payment method 6) Confirm booking. You'll receive instant confirmation!";
+    }
+    
+    if (message.includes("sports") || message.includes("available")) {
+      return "We offer these exciting sports: 🏀 Basketball, ⚽ Football, 🏐 Volleyball, 🎾 Tennis, 🏏 Cricket, 🏸 Badminton. Each sport has specific player requirements and courts across multiple districts!";
+    }
+    
+    if (message.includes("price") || message.includes("cost") || message.includes("fee")) {
+      return "Our court prices are ₹600 per player for all sports. Final cost = ₹600 × number of players. Different sports have different player requirements: Cricket/Football (11-25), Basketball (5-15), Volleyball (6-15), Tennis (2-5), Badminton (2-4).";
     }
     
     if (message.includes("admin") || message.includes("administrator")) {
-      return "Admins can: • Approve/reject facility applications • Manage users and ban accounts • View platform analytics • Handle disputes • Monitor facility quality • Access detailed reports and insights.";
+      return "Admins can: • Approve/reject facility applications • Manage users and accounts • View platform analytics • Handle disputes • Monitor facility quality • Access detailed reports and insights.";
     }
     
     if (message.includes("owner") || message.includes("facility")) {
@@ -76,15 +89,11 @@ export function Chatbot({ className = "" }: ChatbotProps) {
       return "We accept: • Credit/Debit cards • UPI payments • Net banking • Digital wallets. All payments are secure and encrypted. You'll receive instant payment confirmation.";
     }
     
-    if (message.includes("become") || message.includes("register")) {
-      return "To become a facility owner: 1) Sign up and select 'Facility Owner' role 2) Complete profile verification 3) Submit facility details and photos 4) Wait for admin approval 5) Start receiving bookings!";
-    }
-    
     if (message.includes("help") || message.includes("support")) {
-      return "I'm here to help! You can ask me about booking courts, facility management, payments, or any QuickCourt features. For urgent issues, contact our 24/7 support team.";
+      return "I'm here to help! You can ask me about booking courts, sports availability, pricing, facility management, payments, or any QuickCourt features. I can even help guide you through bookings! What would you like to know?";
     }
     
-    return "I understand you're asking about QuickCourt. Could you be more specific? I can help with bookings, facility management, payments, admin features, or general platform questions. Try asking 'How to book a court?' or choose from the quick questions below!";
+    return "I'm here to help with QuickCourt! 🏆 I can assist with:\n• Court bookings and availability\n• Sports info and pricing\n• Venue details and locations\n• Payment and cancellation policies\n• Platform features\n\nTry asking 'I want to book a court' or 'What sports are available?' What can I help you with?";
   };
 
   const sendMessage = () => {
@@ -137,7 +146,7 @@ export function Chatbot({ className = "" }: ChatbotProps) {
           <MessageCircle size={24} />
         </Button>
       ) : (
-        <Card className="w-96 h-[500px] flex flex-col shadow-glow border-border/50">
+        <Card className="w-96 h-[600px] flex flex-col shadow-glow border-border/50">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -165,7 +174,7 @@ export function Chatbot({ className = "" }: ChatbotProps) {
           
           <CardContent className="flex-1 flex flex-col p-3 space-y-3">
             {/* Messages */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 pr-2 h-[300px]">
+            <ScrollArea ref={scrollAreaRef} className="flex-1 pr-2">
               <div className="space-y-3 pb-4">
                 {messages.map((message) => (
                   <div
@@ -188,7 +197,7 @@ export function Chatbot({ className = "" }: ChatbotProps) {
                           <Bot className="text-primary-foreground" size={12} />
                         )}
                       </div>
-                      <div className={`rounded-lg p-2 text-sm ${
+                      <div className={`rounded-lg p-2 text-sm whitespace-pre-line ${
                         message.sender === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-foreground"
@@ -202,13 +211,13 @@ export function Chatbot({ className = "" }: ChatbotProps) {
               </div>
             </ScrollArea>
 
-            {/* Quick Questions */}
-            {messages.length === 1 && (
+            {/* Quick Questions - Show when less than 3 messages */}
+            {messages.length <= 2 && (
               <div className="space-y-2">
-                <p className="text-xs text-muted-foreground flex items-center">
+                <div className="text-xs text-muted-foreground flex items-center">
                   <HelpCircle size={12} className="mr-1" />
                   Quick questions:
-                </p>
+                </div>
                 <div className="flex flex-wrap gap-1">
                   {quickQuestions.map((question, index) => (
                     <Button
