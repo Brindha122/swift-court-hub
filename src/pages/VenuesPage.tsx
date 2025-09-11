@@ -74,7 +74,7 @@ export default function VenuesPage() {
       
       for (let i = 1; i <= 10; i++) {
         const sport = sportsPerDistrict[i % sportsTypes.length];
-        const price = Math.floor(Math.random() * (1000 - 400) + 400); // 400-1000 rupees range
+        const price = Math.floor(Math.random() * (200 - 50) + 50); // 50-200 rupees range
         const rating = (Math.random() * (5.0 - 3.5) + 3.5).toFixed(1);
         
         // Get appropriate image for sport
@@ -142,10 +142,10 @@ export default function VenuesPage() {
                            selectedAmenities.every(amenity => venue.amenities.includes(amenity));
     
     const matchesPrice = !priceRange || 
-                        (priceRange === "under-500" && venue.price < 500) ||
-                        (priceRange === "500-750" && venue.price >= 500 && venue.price < 750) ||
-                        (priceRange === "750-1000" && venue.price >= 750 && venue.price < 1000) ||
-                        (priceRange === "above-1000" && venue.price >= 1000);
+                        (priceRange === "under-75" && venue.price < 75) ||
+                        (priceRange === "75-125" && venue.price >= 75 && venue.price < 125) ||
+                        (priceRange === "125-175" && venue.price >= 125 && venue.price < 175) ||
+                        (priceRange === "above-175" && venue.price >= 175);
 
     return matchesSearch && matchesSports && matchesAmenities && matchesPrice;
   });
@@ -288,10 +288,10 @@ export default function VenuesPage() {
                       <SelectValue placeholder="Select range" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="under-500">Under ₹500</SelectItem>
-                      <SelectItem value="500-750">₹500 - ₹750</SelectItem>
-                      <SelectItem value="750-1000">₹750 - ₹1,000</SelectItem>
-                      <SelectItem value="above-1000">Above ₹1,000</SelectItem>
+                      <SelectItem value="under-75">Under ₹75</SelectItem>
+                      <SelectItem value="75-125">₹75 - ₹125</SelectItem>
+                      <SelectItem value="125-175">₹125 - ₹175</SelectItem>
+                      <SelectItem value="above-175">Above ₹175</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

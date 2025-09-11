@@ -157,7 +157,7 @@ export default function UserProfile() {
               <CardContent className="p-6 text-center">
                 <div className="relative inline-block mb-4">
                   <Avatar className="w-24 h-24">
-                    <AvatarImage src="/placeholder.svg" alt="Profile" />
+                    <AvatarImage src="/lovable-uploads/13d0c549-1b62-4884-ae86-e9d40d7c703e.png" alt="Profile" />
                     <AvatarFallback className="text-2xl">CU</AvatarFallback>
                   </Avatar>
                   <Button 

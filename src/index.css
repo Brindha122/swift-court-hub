@@ -113,3 +113,28 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  /* Sliding cards animation */
+  @keyframes slideCards {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-20px);
+    }
+  }
+  
+  .slide-cards {
+    animation: slideCards 3s ease-in-out infinite alternate;
+  }
+  
+  /* Hover scale animation */
+  .hover-scale {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+}

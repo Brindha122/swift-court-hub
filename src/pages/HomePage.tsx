@@ -29,6 +29,12 @@ import venueBasketball from "@/assets/venue-basketball.jpg";
 import venueFootball from "@/assets/venue-football.jpg";
 import venueCricket from "@/assets/venue-cricket.jpg";
 import venueVolleyball from "@/assets/venue-volleyball.jpg";
+import playerBadminton from "@/assets/player-badminton.jpg";
+import playerTennis from "@/assets/player-tennis.jpg";
+import playerBasketball from "@/assets/player-basketball.jpg";
+import playerFootball from "@/assets/player-football.jpg";
+import playerCricket from "@/assets/player-cricket.jpg";
+import playerVolleyball from "@/assets/player-volleyball.jpg";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +61,7 @@ export default function HomePage() {
     name: `${district} Sports Complex`,
     sport: sports[index],
     location: `${district}, Tamil Nadu`,
-    price: Math.floor(Math.random() * (1000 - 400) + 400), // 400-1000 rupees range
+    price: Math.floor(Math.random() * (200 - 50) + 50), // 50-200 rupees range
     rating: (4.5 + (index * 0.1)),
     image: sportImages[index],
     amenities: ["AC", "Parking", "Lockers", "Equipment", "Coaching", "Cafeteria"],
@@ -241,16 +247,17 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {[
-              { name: "Football", image: venueFootball, icon: "⚽", count: "200+" },
-              { name: "Volleyball", image: venueVolleyball, icon: "🏐", count: "180+" },
-              { name: "Tennis", image: venueTennis, icon: "🎾", count: "350+" },
-              { name: "Badminton", image: venueBadminton, icon: "🏸", count: "400+" },
-              { name: "Basketball", image: venueBasketball, icon: "🏀", count: "220+" },
-              { name: "Cricket", image: venueCricket, icon: "🏏", count: "160+" }
-            ].map((sport) => (
+              { name: "Football", image: playerFootball, icon: "⚽", count: "200+" },
+              { name: "Volleyball", image: playerVolleyball, icon: "🏐", count: "180+" },
+              { name: "Tennis", image: playerTennis, icon: "🎾", count: "350+" },
+              { name: "Badminton", image: playerBadminton, icon: "🏸", count: "400+" },
+              { name: "Basketball", image: playerBasketball, icon: "🏀", count: "220+" },
+              { name: "Cricket", image: playerCricket, icon: "🏏", count: "160+" }
+            ].map((sport, index) => (
               <Card 
                 key={sport.name} 
-                className="group cursor-pointer hover:shadow-card transition-smooth border-border/50 overflow-hidden relative h-48"
+                className="group cursor-pointer hover:shadow-card transition-smooth border-border/50 overflow-hidden relative h-48 slide-cards hover-scale"
+                style={{ animationDelay: `${index * 0.2}s` }}
                 onClick={() => navigate(`/venues?sport=${sport.name.toLowerCase()}`)}
               >
                 <div 
