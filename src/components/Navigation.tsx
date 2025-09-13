@@ -14,6 +14,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NavigationProps {
   userRole?: "user" | "facility_owner" | "admin";
@@ -45,7 +46,7 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
         ];
       default:
         return [
-          { icon: Home, label: "Home", path: "/" },
+          { icon: Home, label: "Home", path: "/home" },
           { icon: MapPin, label: "Venues", path: "/venues" },
           { icon: Calendar, label: "My Bookings", path: "/bookings" },
           { icon: User, label: "Profile", path: "/profile" },
@@ -55,9 +56,8 @@ export function Navigation({ userRole = "user", userName = "Guest User" }: Navig
 
   const navItems = getUserNavItems();
 
-  const handleLogout = () => {
-    // In a real app, you would clear auth tokens, user data, etc.
-    localStorage.clear();
+const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/');
   };
 

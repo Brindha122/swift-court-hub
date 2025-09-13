@@ -15,20 +15,50 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import Footer from "./components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  return isLoggedIn ? <>{children}</> : <Navigate to="/" replace />;
+  const [session, setSession] = useState<import('@supabase/supabase-js').Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  return session ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 // Auth Route Component (redirect to home if already logged in)
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  return !isLoggedIn ? <>{children}</> : <Navigate to="/home" replace />;
+  const [session, setSession] = useState<import('@supabase/supabase-js').Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  return !session ? <>{children}</> : <Navigate to="/home" replace />;
 };
+
 
 const App = () => {
   const [isLoaded, setIsLoaded] = useState(false);

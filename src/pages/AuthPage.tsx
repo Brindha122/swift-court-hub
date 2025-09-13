@@ -23,6 +23,8 @@ import {
   UserPlus
 } from "lucide-react";
 
+import { supabase } from "@/integrations/supabase/client";
+
 export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({
@@ -44,36 +46,32 @@ export default function AuthPage() {
   const [signupError, setSignupError] = useState("");
   const [activeTab, setActiveTab] = useState("login");
 
-  const handleLogin = (e: React.FormEvent) => {
+const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError("");
     
-    // Basic validation
     if (!loginForm.email || !loginForm.password) {
       setLoginError("Please fill all fields");
       return;
     }
 
-    // Mock validation - check if user exists in localStorage
-    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
-    const user = users.find((u: any) => u.email === loginForm.email && u.password === loginForm.password);
-    
-    if (user) {
-      // Set user session
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      localStorage.setItem("isLoggedIn", "true");
-      console.log("Login successful:", user);
-      navigate("/home");
-    } else {
-      setLoginError("Invalid email or password");
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginForm.email,
+      password: loginForm.password,
+    });
+
+    if (error) {
+      setLoginError(error.message);
+      return;
     }
+
+    navigate("/home");
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignupError("");
     
-    // Basic validation
     if (!signupForm.name || !signupForm.email || !signupForm.phone || !signupForm.password || !signupForm.confirmPassword) {
       setSignupError("Please fill all fields");
       return;
@@ -84,29 +82,25 @@ export default function AuthPage() {
       return;
     }
 
-    // Check if user already exists
-    const users = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
-    const existingUser = users.find((u: any) => u.email === signupForm.email);
-    
-    if (existingUser) {
-      setSignupError("User already exists with this email");
+    const redirectUrl = `${window.location.origin}/`;
+    const { error } = await supabase.auth.signUp({
+      email: signupForm.email,
+      password: signupForm.password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          full_name: signupForm.name,
+          phone: signupForm.phone,
+          role: signupForm.userType
+        }
+      }
+    });
+
+    if (error) {
+      setSignupError(error.message);
       return;
     }
 
-    // Save user to localStorage
-    const newUser = {
-      name: signupForm.name,
-      email: signupForm.email,
-      phone: signupForm.phone,
-      password: signupForm.password,
-      userType: signupForm.userType
-    };
-    
-    users.push(newUser);
-    localStorage.setItem("registeredUsers", JSON.stringify(users));
-    
-    console.log("Signup successful:", newUser);
-    
     // Switch to login tab after successful signup
     setActiveTab("login");
     setLoginForm({ email: signupForm.email, password: "" });

@@ -24,6 +24,7 @@ import {
   Plus,
   Minus
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Sport configurations with min/max players
 const SPORT_CONFIGS = {
@@ -104,7 +105,7 @@ export default function BookingPage() {
     "2024-01-18", "2024-01-19", "2024-01-20", "2024-01-21"
   ];
 
-  const handleBooking = async () => {
+const handleBooking = async () => {
     if (!selectedDate || !selectedTime || playerCount === 0) {
       toast({
         title: "Missing Information",
@@ -114,7 +115,6 @@ export default function BookingPage() {
       return;
     }
 
-    // Validate all player details
     const incompletePlayer = players.find(player => !player.name || !player.phone);
     if (incompletePlayer) {
       toast({
@@ -126,18 +126,74 @@ export default function BookingPage() {
     }
 
     setIsBooking(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
       setIsBooking(false);
-      toast({
-        title: "Booking Confirmed! 🎉",
-        description: `Court booked successfully for ${playerCount} players`,
-      });
-      
-      // Navigate to bookings page
-      navigate("/bookings");
-    }, 2000);
+      toast({ title: "Not logged in", description: "Please login again and retry.", variant: "destructive" });
+      return;
+    }
+
+    const [startStr, endStr] = selectedTime.split(' - ');
+    const start_time = `${startStr}:00`;
+    const end_time = `${endStr}:00`;
+    const startDate = new Date(`1970-01-01T${startStr}:00Z`);
+    const endDate = new Date(`1970-01-01T${endStr}:00Z`);
+    const duration_hours = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60)));
+
+    const totalAmount = venue.price * Math.max(1, playerCount);
+    const serviceFee = Math.round(totalAmount * 0.05);
+    const finalAmount = totalAmount + serviceFee;
+
+    const isUuid = (v: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+    const venue_uuid = isUuid(venueId) ? (venueId as string) : crypto.randomUUID();
+
+    const { data: bookingInsert, error: bookingError } = await supabase
+      .from('bookings')
+      .insert({
+        user_id: session.user.id,
+        venue_id: venue_uuid,
+        sport: sportParam.toLowerCase(),
+        booking_date: selectedDate,
+        start_time,
+        end_time,
+        duration_hours,
+        player_count: playerCount,
+        total_amount: totalAmount,
+        service_fee: serviceFee,
+        final_amount: finalAmount,
+        special_requests: specialRequests,
+        payment_status: 'paid',
+        status: 'confirmed'
+      })
+      .select('id')
+      .single();
+
+    if (bookingError || !bookingInsert) {
+      setIsBooking(false);
+      toast({ title: 'Booking failed', description: bookingError?.message || 'Please try again', variant: 'destructive' });
+      return;
+    }
+
+    const playersPayload = players.map((p, idx) => ({
+      booking_id: bookingInsert.id,
+      player_name: p.name,
+      player_phone: p.phone,
+      player_email: p.email || null,
+      is_primary: idx === 0
+    }));
+
+    const { error: playersError } = await supabase.from('booking_players').insert(playersPayload);
+    if (playersError) {
+      console.error(playersError);
+    }
+
+    setIsBooking(false);
+    toast({
+      title: "Booking Confirmed! 🎉",
+      description: `Court booked successfully for ${playerCount} players`,
+    });
+    navigate("/bookings");
   };
 
   const totalAmount = venue.price * Math.max(1, playerCount);
